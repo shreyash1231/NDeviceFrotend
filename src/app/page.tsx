@@ -42,7 +42,6 @@ export default function HomePage() {
       alert("Registered - you can access private page")
     } else if (res.status === 409) {
       const data = await res.json()
-      const sessions = data.sessions
       const choice = window.prompt(
         "Limit reached. Enter session id to force logout or cancel:"
       )
@@ -118,12 +117,18 @@ export default function HomePage() {
             </Button>
 
             <Button
-              variant="destructive"
-              className="flex-1 transition-colors"
-              onClick={() => logout({ returnTo: window.location.origin })}
-            >
-              Logout
-            </Button>
+                variant="destructive"
+                className="flex-1 transition-colors"
+                onClick={() =>
+                  logout({
+                    logoutParams: {
+                      returnTo: window.location.origin,
+                    },
+                  })
+                }
+              >
+                Logout
+              </Button>
           </div>
 
           <div className="text-center">

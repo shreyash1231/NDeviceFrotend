@@ -8,9 +8,14 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react" // ✅ spinner icon
 
+type UserInfo = {
+  full_name: string
+  phone: string
+}
+
 export default function PrivatePage() {
   const { isAuthenticated, getIdTokenClaims, logout } = useAuth0()
-  const [info, setInfo] = useState<any>(null)
+  const [info, setInfo] = useState<UserInfo | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -33,7 +38,7 @@ export default function PrivatePage() {
         )
 
         if (res.status === 200) {
-          const data = await res.json()
+          const data: UserInfo = await res.json()
           setInfo(data)
         } else {
           const err = await res.json()
@@ -41,7 +46,11 @@ export default function PrivatePage() {
             alert(
               "You have been logged out because another device logged in. Redirecting..."
             )
-            logout({ returnTo: window.location.origin })
+            logout({
+              logoutParams: {
+                returnTo: window.location.origin,
+              },
+            })
           } else {
             router.push("/") // any other error → redirect
           }
@@ -53,7 +62,7 @@ export default function PrivatePage() {
     })()
   }, [isAuthenticated, getIdTokenClaims, logout, router])
 
-  if (!isAuthenticated) return
+  if (!isAuthenticated) return null
 
   // ✅ Show spinner while loading
   if (!info)
